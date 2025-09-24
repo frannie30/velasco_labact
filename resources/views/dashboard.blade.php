@@ -12,22 +12,25 @@
                     Choose a Province of the Philippines and see its dishes
                 </h3>
                 <div class="mb-8 flex justify-center">
-                    <input 
-                        type="text" 
-                        id="province-search" 
-                        class="w-full max-w-md border-2 border-pink-300 rounded-xl px-4 py-3 bg-pink-50 text-pink-800 font-semibold" 
-                        placeholder="Search province..."
-                        onkeyup="filterProvinces()"
-                    >
+                    <form method="GET" action="{{ route('dashboard') }}" class="w-full max-w-md">
+                        <input 
+                            type="text" 
+                            name="search"
+                            value="{{ $search ?? '' }}"
+                            class="w-full border-2 border-pink-300 rounded-xl px-4 py-3 bg-pink-50 text-pink-800 font-semibold" 
+                            placeholder="Search province..."
+                            oninput="this.form.submit()"
+                        >
+                    </form>
                 </div>
                 <div id="province-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
                     @foreach($provinces as $province)
-                        <form method="POST" action="{{ route('province') }}" class="province-item">
+                        <form method="POST" action="{{ route('province') }}">
                             @csrf
                             <input type="hidden" name="province" value="{{ $province['name'] }}">
                             <button type="submit" class="w-full border-2 border-pink-300 rounded-xl shadow-lg p-6 bg-pink-100 flex items-center 
                             justify-center transition hover:bg-pink-200 hover:scale-105 hover:shadow-2xl cursor-pointer focus:outline-none focus:ring-2 focus:ring-pink-400">
-                                <span class="text-pink-800 font-semibold text-lg province-name">{{ $province['name'] }}</span>
+                                <span class="text-pink-800 font-semibold text-lg">{{ $province['name'] }}</span>
                             </button>
                         </form>
                     @endforeach
@@ -36,13 +39,3 @@
         </div>
     </div>
 </x-app-layout>
-
-<script>
-function filterProvinces() {
-    const search = document.getElementById('province-search').value.toLowerCase();
-    document.querySelectorAll('.province-item').forEach(item => {
-        const name = item.querySelector('.province-name').textContent.toLowerCase();
-        item.style.display = name.includes(search) ? '' : 'none';
-    });
-}
-</script>

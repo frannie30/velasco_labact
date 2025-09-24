@@ -35,16 +35,16 @@ Route::get('/dashboard', [UserController::class, 'dashboard'])->name('dashboard'
    Route::match(['get', 'post'], '/province', [UserController::class, 'showProvince'])
         ->name('province');
 
-Route::match(['get', 'post'], '/users/store', [UserController::class, 'store'])->name('users.store');
+    Route::match(['get', 'post'], '/users/store', [UserController::class, 'store'])->name('users.store');
 
         Route::middleware(CheckRole::class)->group(function () {
-    Route::get('/create', [AdminController::class, 'create'])->name('create.index');
-        Route::get('/edit', [AdminController::class, 'edit'])->name('edit.index');
+            Route::get('/create', [AdminController::class, 'create'])->name('create.index');
+            Route::get('/edit', [AdminController::class, 'edit'])->name('edit.index');
             Route::get('/index', [AdminController::class, 'index'])->name('index.index');
             Route::post('/admin/approve/{id}', [AdminController::class, 'approve'])->name('admin.approve');
             Route::post('/admin/recipe/{id}/remove', [AdminController::class, 'remove'])->name('admin.recipe.remove');
             Route::get('/admin/recipe/{id}/edit', [AdminController::class, 'edit'])->name('edit.index');
-Route::put('/recipes/{id}', [AdminController::class, 'update'])->name('recipes.update');
+            Route::put('/recipes/{id}', [AdminController::class, 'update'])->name('recipes.update');
 
         });
 

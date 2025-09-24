@@ -10,13 +10,20 @@ use \Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    public function dashboard()
+    public function dashboard(Request $request)
     {
-        $provinces = Provinces::all();
-        return view('dashboard', compact('provinces'));
+        $search = $request->get('search');
+        
+        if ($search) {
+            $provinces = Provinces::where('name', 'LIKE', '%' . $search . '%')->get();
+        } else {
+            $provinces = Provinces::all();
+        }
+        
+        return view('dashboard', compact('provinces', 'search'));
     }
 
-    public function showProvince( $request)
+    public function showProvince(Request $request)
     {
         $provinceName = $request->input('province') ?? session('province');
         if ($provinceName) {
@@ -43,7 +50,7 @@ class UserController extends Controller
         return view('users.submitrecipe', compact('provinces'));
     }
 
-    public function showRecipe(\Illuminate\Http\Request $request)
+    public function showRecipe(Request $request)
     {
         $province = $request->input('province');
         $dish = $request->input('dish');
