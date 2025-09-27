@@ -45,6 +45,9 @@ Route::get('/dashboard', [UserController::class, 'dashboard'])->name('dashboard'
             Route::post('/admin/recipe/{id}/remove', [AdminController::class, 'remove'])->name('admin.recipe.remove');
             Route::get('/admin/recipe/{id}/edit', [AdminController::class, 'edit'])->name('edit.index');
             Route::put('/recipes/{id}', [AdminController::class, 'update'])->name('recipes.update');
+            Route::get('/archives', [AdminController::class, 'archives'])->name('archives.index');
+            Route::post('/admin/recipes/{id}/restore', [AdminController::class, 'restore'])->name('admin.recipes.restore');
+            Route::post('/admin/recipes/{id}/delete', [AdminController::class, 'delete'])->name('admin.recipes.delete');
 
         });
 

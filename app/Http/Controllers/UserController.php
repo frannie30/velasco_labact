@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Provinces;
+use App\Models\Province;
 use App\Models\Recipe;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
@@ -15,9 +15,9 @@ class UserController extends Controller
         $search = $request->get('search');
         
         if ($search) {
-            $provinces = Provinces::where('name', 'LIKE', '%' . $search . '%')->get();
+            $provinces = Province::where('name', 'LIKE', '%' . $search . '%')->get();
         } else {
-            $provinces = Provinces::all();
+            $provinces = Province::all();
         }
         
         return view('dashboard', compact('provinces', 'search'));
@@ -30,8 +30,8 @@ class UserController extends Controller
             session(['province' => $provinceName]);
         }
 
-        $provinces = Provinces::all();
-        $province = Provinces::where('name', $provinceName)->first();
+        $provinces = Province::all();
+        $province = Province::where('name', $provinceName)->first();
 
         $recipes = $province
             ? $province->recipes()->where('is_approved', 1)->get()
@@ -46,7 +46,7 @@ class UserController extends Controller
 
     public function submitRecipe()
     {
-        $provinces = Provinces::all();
+        $provinces = Province::all();
         return view('users.submitrecipe', compact('provinces'));
     }
 
@@ -54,7 +54,7 @@ class UserController extends Controller
     {
         $province = $request->input('province');
         $dish = $request->input('dish');
-        $provinceModel = Provinces::where('name', $province)->first();
+        $provinceModel = Province::where('name', $province)->first();
 
         $recipe = $provinceModel
             ? Recipe::where('province_id', $provinceModel->id)
@@ -66,11 +66,23 @@ class UserController extends Controller
         return view('users.recipe', compact('province', 'recipe'));
     }
 
-    public function store(\Illuminate\Http\Request $request)
+
+    public function store(Request $request)
     {
         $provinceName = Str::title($request->province);
-        $province = Provinces::where('name', $provinceName)->first();
+        $province = Province::where('name', $provinceName)->first();
         $province_id = $province ? $province->id : null;
+
+         $validated = $request->validate([
+            'province_id' => 'nullable|exists:provinces,id',
+            'province' => 'required',
+            'name' => 'required|string|max:100',
+            'description' => 'required|string|max:255',
+            'ingredients'   => 'required|array|min:1|max:50',
+            'ingredients.*' => 'required|string|max:100',
+            'recipe'   => 'required|array|min:1|max:100',
+            'recipe.*' => 'required|string|max:255',
+         ]);
 
         Recipe::create([
             'province_id' => $province_id,
@@ -84,4 +96,6 @@ class UserController extends Controller
 
         return redirect()->route('dashboard')->with('success', 'Recipe created successfully.');
     }
+
+    
 }

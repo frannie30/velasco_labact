@@ -34,27 +34,58 @@
         <textarea id="description" name="description" rows="4" class="w-full border-2 border-pink-200 rounded-xl px-4 py-3 bg-pink-50 focus:border-pink-400 focus:ring-2 focus:ring-pink-200 transition">{{ old('description', $recipe->description) }}</textarea>
     </div>
 
-    <div>
+    <div x-data="{ ingredients: {{ json_encode(old('ingredients', $recipe->ingredients ?? [])) }}, newIngredient: '' }" class="mb-4">
         <label class="block text-pink-800 font-semibold mb-2">Ingredients</label>
-        <div id="ingredients-list"></div>
+
         <div class="flex gap-2 mb-2">
-            <input type="text" id="ingredient-input" class="w-full border-2 border-pink-200 rounded-xl px-4 py-2 bg-pink-50" placeholder="Add ingredient">
-            <button type="button" onclick="addIngredient()" class="bg-pink-600 text-white px-4 py-2 rounded-xl font-bold hover:bg-pink-700">Add</button>
+            <input type="text" x-model="newIngredient"
+                   class="w-full border-2 border-pink-200 rounded-xl px-4 py-2 bg-pink-50"
+                   placeholder="Type ingredient and click Add">
+            <button type="button"
+                    class="bg-pink-600 text-white px-4 py-2 rounded-xl font-bold hover:bg-pink-700"
+                    @click="if(newIngredient.trim() !== '') { ingredients.push(newIngredient.trim()); newIngredient=''; }">
+                Add
+            </button>
         </div>
-        <input type="hidden" name="ingredients" id="ingredients-hidden">
-        <input type="hidden" id="old-ingredients" value="{{ old('ingredients', $recipe->ingredients) }}">
+
+        <template x-for="(ing, index) in ingredients" :key="index">
+            <div class="flex items-center gap-2 mb-1">
+                <input type="hidden" :name="'ingredients['+index+']'" :value="ing">
+                <span class="flex-1" x-text="ing"></span>
+                <button type="button" class="text-red-500 font-bold"
+                        @click="ingredients.splice(index,1)">
+                    Remove
+                </button>
+            </div>
+        </template>
     </div>
 
-    <div>
+    <div x-data="{ steps: {{ json_encode(old('recipe', $recipe->recipe ?? [])) }}, newStep: '' }" class="mb-4">
         <label class="block text-pink-800 font-semibold mb-2">Recipe Steps</label>
-        <div id="steps-list"></div>
+
         <div class="flex gap-2 mb-2">
-            <input type="text" id="step-input" class="w-full border-2 border-pink-200 rounded-xl px-4 py-2 bg-pink-50" placeholder="Add step">
-            <button type="button" onclick="addStep()" class="bg-pink-600 text-white px-4 py-2 rounded-xl font-bold hover:bg-pink-700">Add</button>
+            <input type="text" x-model="newStep"
+                   class="w-full border-2 border-pink-200 rounded-xl px-4 py-2 bg-pink-50"
+                   placeholder="Type step and click Add">
+            <button type="button"
+                    class="bg-pink-600 text-white px-4 py-2 rounded-xl font-bold hover:bg-pink-700"
+                    @click="if(newStep.trim() !== '') { steps.push(newStep.trim()); newStep=''; }">
+                Add
+            </button>
         </div>
-        <input type="hidden" name="recipe" id="steps-hidden">
-        <input type="hidden" id="old-steps" value="{{ old('recipe', $recipe->recipe) }}">
+
+        <template x-for="(step, index) in steps" :key="index">
+            <div class="flex items-center gap-2 mb-1">
+                <input type="hidden" :name="'recipe['+index+']'" :value="step">
+                <span class="flex-1">Step <span x-text="index+1"></span>: <span x-text="step"></span></span>
+                <button type="button" class="text-red-500 font-bold"
+                        @click="steps.splice(index,1)">
+                    Remove
+                </button>
+            </div>
+        </template>
     </div>
+
 
     <div class="flex justify-center gap-4">
         <button type="submit" class="bg-pink-600 text-white px-8 py-3 rounded-xl font-bold shadow-lg hover:bg-pink-700 hover:scale-105 transition focus:outline-none focus:ring-2 focus:ring-pink-400">
@@ -69,68 +100,3 @@
         </div>
     </div>
 </x-app-layout>
-
-<script>
-    let ingredients = [];
-    let steps = [];
-
-    function addIngredient() {
-        const input = document.getElementById('ingredient-input');
-        if (input.value.trim() === '') return;
-        ingredients.push(input.value.trim());
-        input.value = '';
-        updateIngredients();
-    }
-
-    function removeIngredient(index) {
-        ingredients.splice(index, 1);
-        updateIngredients();
-    }
-
-    function updateIngredients() {
-        const list = document.getElementById('ingredients-list');
-        list.innerHTML = ingredients.map((ing, i) =>
-            `<div class="flex items-center gap-2 mb-1">
-                <span>${ing}</span>
-                <button type="button" onclick="removeIngredient(${i})" class="text-red-500 font-bold">Remove</button>
-            </div>`
-        ).join('');
-        document.getElementById('ingredients-hidden').value = ingredients.join(', ');
-    }
-
-    function addStep() {
-        const input = document.getElementById('step-input');
-        if (input.value.trim() === '') return;
-        steps.push(input.value.trim());
-        input.value = '';
-        updateSteps();
-    }
-
-    function removeStep(index) {
-        steps.splice(index, 1);
-        updateSteps();
-    }
-
-    function updateSteps() {
-        const list = document.getElementById('steps-list');
-        list.innerHTML = steps.map((step, i) =>
-            `<div class="flex items-center gap-2 mb-1">
-                <span>Step ${i+1}: ${step}</span>
-                <button type="button" onclick="removeStep(${i})" class="text-red-500 font-bold">Remove</button>
-            </div>`
-        ).join('');
-        document.getElementById('steps-hidden').value = steps.join('\n');
-    }
-
-    const oldIngredients = document.getElementById('old-ingredients').value;
-    if (oldIngredients) {
-        ingredients = oldIngredients.split(',').map(i => i.trim()).filter(i => i);
-        updateIngredients();
-    }
-
-    const oldSteps = document.getElementById('old-steps').value;
-    if (oldSteps) {
-        steps = oldSteps.split('\n').map(s => s.trim()).filter(s => s);
-        updateSteps();
-    }
-</script>

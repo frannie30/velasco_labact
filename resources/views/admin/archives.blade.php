@@ -26,10 +26,10 @@
                    aria-label="Back to Dashboard">
                     &larr;
                 </a>  
-                <h2 class="text-3xl font-extrabold mb-6 text-center text-pink-700">Add New Recipe</h2>
+                <h2 class="text-3xl font-extrabold mb-6 text-center text-pink-700">Recipe Archives</h2>
 
                 <!-- Static Table of Posts -->
-                <h2 class="text-xl font-bold mb-4 text-pink-800">Here are the Recipes submitted by the users</h2>
+                <h2 class="text-xl font-bold mb-4 text-pink-800">Here are the recipes you have removed</h2>
                 <div class="overflow-x-auto">
                     <table class="min-w-full bg-white border border-pink-200 rounded-xl shadow">
                         <thead class="bg-pink-100">
@@ -67,13 +67,13 @@
                 </ol>
              </td>
             <td class="px-6 py-4 border-b align-top">
-            <form method="POST" action="{{ route('admin.approve', $recipe->id) }}" style="display:inline;">
+            <form method="POST" action="{{ route('admin.recipes.restore', $recipe->id) }}" style="display:inline;">
                 @csrf
-                <button type="submit" class="inline-block bg-pink-100 text-pink-700 px-4 py-2 rounded-lg font-semibold hover:bg-pink-200 transition mr-2">Add</button>
+                <button type="submit" class="inline-block bg-pink-100 text-pink-700 px-4 py-2 rounded-lg font-semibold hover:bg-pink-200 transition mr-2">Restore</button>
             </form>
-            <form method="POST" action="{{ route('admin.recipe.remove', $recipe->id) }}" style="display:inline;">
+            <form method="POST" action="{{ route('admin.recipes.delete', $recipe->id) }}" style="display:inline;" class="delete-form">
                 @csrf
-                <button type="submit" class="inline-block bg-pink-50 text-red-600 px-4 py-2 rounded-lg font-semibold hover:bg-pink-100 transition">Remove</button>
+                <button type="submit" class="inline-block bg-pink-50 text-red-600 px-4 py-2 rounded-lg font-semibold hover:bg-pink-100 transition">Delete</button>
             </form>
         </td>
         </tr>
@@ -90,3 +90,31 @@
         </div>
     </div>
 </x-app-layout>
+
+<!-- Add SweetAlert2 CDN -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const deleteForms = document.querySelectorAll('.delete-form');
+
+    deleteForms.forEach(form => {
+        form.addEventListener('submit', function (e) {
+            e.preventDefault(); // stop normal submit
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "This will permanently delete the recipe!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit(); // proceed with form
+                }
+            });
+        });
+    });
+});
+</script>

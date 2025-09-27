@@ -5,6 +5,18 @@
         </h2>
     </x-slot>
 
+    @if (session('success'))
+    <div class="mb-4 px-4 py-3 rounded-lg bg-green-100 border border-green-300 text-green-800 font-semibold shadow">
+        {{ session('success') }}
+    </div>
+@endif
+
+@if (session('error'))
+    <div class="mb-4 px-4 py-3 rounded-lg bg-red-100 border border-red-300 text-red-800 font-semibold shadow">
+        {{ session('error') }}
+    </div>
+@endif
+
     <div class="py-12 bg-pink-50 min-h-screen">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white/90 shadow-2xl rounded-2xl p-14 border border-pink-200">
@@ -17,10 +29,18 @@
                             Hi, <span class="font-semibold">{{ Auth::user()->name }}</span>! What would you like to do?
                         </p>
                     </div>
-                    <a href="{{ route('create.index') }}"
-                       class="bg-pink-600 text-white px-8 py-3 rounded-xl font-bold shadow-lg hover:bg-pink-700 hover:scale-105 transition focus:outline-none focus:ring-2 focus:ring-pink-400">
-                        + Add New Recipe
-                    </a>
+                    <div class="flex gap-3">
+                        <a href="{{ route('create.index') }}"
+                           class="bg-pink-600 text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:bg-pink-700 hover:scale-105 transition focus:outline-none focus:ring-2 focus:ring-pink-400 flex items-center">
+                            
+                            + Add New Recipe
+                        </a>
+                        <a href="{{ route('archives.index') }}"
+                           class="bg-gray-500 text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:bg-gray-600 hover:scale-105 transition focus:outline-none focus:ring-2 focus:ring-gray-400 flex items-center">
+                           
+                            - View Archive
+                        </a>
+                    </div>
                 </div>
 
                 <div class="overflow-x-auto">
@@ -43,17 +63,15 @@
                                     <td class="px-6 py-4 border-b align-top">{{ $recipe->name }}</td>
                                     <td class="px-6 py-4 border-b align-top">
                                         <ul class="list-disc list-inside text-pink-900">
-                                            @foreach(explode(',', $recipe->ingredients) as $ingredient)
-                                                <li>{{ trim($ingredient) }}</li>
+                                            @foreach($recipe->ingredients as $ingredient)
+                                                <li>{{ $ingredient }}</li>
                                             @endforeach
                                         </ul>
                                     </td>
                                     <td class="px-6 py-4 border-b align-top">
                                         <ol class="list-decimal list-inside text-pink-900">
-                                            @foreach(explode('.', $recipe->recipe) as $step)
-                                                @if(trim($step) != '')
-                                                    <li>{{ trim($step) }}</li>
-                                                @endif
+                                            @foreach($recipe->recipe as $step)
+                                                <li>{{ $step }}</li>
                                             @endforeach
                                         </ol>
                                     </td>
@@ -72,6 +90,10 @@
                             @endforelse
                         </tbody>
                     </table>
+                </div>
+
+                <div class="mt-6">
+                    {{ $recipes->links() }}
                 </div>
             </div>
         </div>

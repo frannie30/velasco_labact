@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Recipe extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, HasFactory;
 
     protected $fillable = [
         'name',
@@ -18,6 +19,11 @@ class Recipe extends Model
         'province_id'
     ];
 
+     protected $casts = [
+        'ingredients' => 'array',
+        'recipe'      => 'array',
+    ];
+    
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -25,6 +31,6 @@ class Recipe extends Model
 
     public function province()
     {
-        return $this->belongsTo(Provinces::class, 'province_id');
+        return $this->belongsTo(Province::class, 'province_id');
     }
 }

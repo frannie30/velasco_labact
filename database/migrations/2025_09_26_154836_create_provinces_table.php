@@ -11,16 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('recipes', function (Blueprint $table) {
-            $table->id('id');
+        Schema::create('provinces', function (Blueprint $table) {
+            $table->id();
             $table->string('name');
-            $table->text('description');
-            $table->text('ingredients');
-            $table->text('recipe');
-            $table->string('user_id');
-            $table->string('province_id');
-            $table->boolean('is_approved')->default(false);
-            $table->softDeletes();
             $table->timestamps();
         });
     }
@@ -30,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('recipes');
+        Schema::dropIfExists('provinces');
     }
 };

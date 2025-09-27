@@ -3,12 +3,15 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Provinces extends Model
+class Province extends Model
 {
+    use HasFactory;
+
     // Eloquent relationship: a province has many recipes
     public function recipes()
     {
-        return $this->hasMany(Recipe::class, 'province_id');
+        return $this->hasMany(Recipe::class, 'province_id'); 
     }
 }

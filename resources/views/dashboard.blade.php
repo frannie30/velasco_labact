@@ -5,6 +5,19 @@
         </h2>
     </x-slot>
 
+@if (session('success'))
+    <div class="mb-4 px-4 py-3 rounded-lg bg-green-100 border border-green-300 text-green-800 font-semibold shadow">
+        {{ session('success') }}
+    </div>
+@endif
+
+@if (session('error'))
+    <div class="mb-4 px-4 py-3 rounded-lg bg-red-100 border border-red-300 text-red-800 font-semibold shadow">
+        {{ session('error') }}
+    </div>
+@endif
+
+
     <div class="py-12 bg-pink-50 min-h-screen">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white/80 backdrop-blur-md overflow-hidden shadow-2xl sm:rounded-2xl p-10 border border-pink-200">

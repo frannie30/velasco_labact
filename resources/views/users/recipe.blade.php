@@ -21,18 +21,17 @@
                     <div class="bg-pink-50 rounded-xl p-6 mb-6 border border-pink-100 shadow">
                         <h3 class="text-xl font-semibold mb-2 text-pink-800">Ingredients</h3>
                         <ul class="list-disc list-inside text-pink-900 mb-4 space-y-1">
-                            @foreach(explode(',', $recipe->ingredients) as $ingredient)
-                                <li>{{ trim($ingredient) }}</li>
+                            @foreach($recipe->ingredients as $ingredient)
+                                <li>{{ $ingredient }}</li>
                             @endforeach
                         </ul>
                     </div>
+
                     <div class="bg-pink-50 rounded-xl p-6 border border-pink-100 shadow">
                         <h3 class="text-xl font-semibold mb-2 text-pink-800">Steps</h3>
                         <ol class="list-decimal list-inside text-pink-900 space-y-1">
-                            @foreach(preg_split('/\r\n|\r|\n/', $recipe->recipe) as $step)
-                                @if(trim($step) != '')
-                                    <li>{{ trim($step) }}</li>
-                                @endif
+                            @foreach($recipe->recipe as $step)
+                                <li>{{ $step }}</li>
                             @endforeach
                         </ol>
                     </div>
