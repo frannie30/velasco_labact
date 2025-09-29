@@ -18,8 +18,8 @@
 @endif
 
     <div class="py-12 bg-pink-50 min-h-screen">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white/90 shadow-2xl rounded-2xl p-14 border border-pink-200">
+        <div class="max-w-full mx-auto sm:px-12 lg:px-24">
+            <div class="bg-white/90 shadow-2xl rounded-2xl p-16 border border-pink-200">
                 <div class="mb-10 border-b pb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div>
                         <h3 class="text-3xl font-extrabold text-pink-700 mb-1">
@@ -50,6 +50,7 @@
                                 <th class="px-6 py-3 border-b text-left text-pink-800 font-semibold">User</th>
                                 <th class="px-6 py-3 border-b text-left text-pink-800 font-semibold">Province</th>
                                 <th class="px-6 py-3 border-b text-left text-pink-800 font-semibold">Dish Name</th>
+                                <th class="px-6 py-3 border-b text-left text-pink-800 font-semibold min-w-[16rem]">Description</th>
                                 <th class="px-6 py-3 border-b text-left text-pink-800 font-semibold">Ingredients</th>
                                 <th class="px-6 py-3 border-b text-left text-pink-800 font-semibold">Recipe</th>
                                 <th class="px-6 py-3 border-b text-left text-pink-800 font-semibold">Actions</th>
@@ -57,37 +58,53 @@
                         </thead>
                         <tbody>
                             @forelse($recipes as $recipe)
-                                <tr class="hover:bg-pink-50 transition">
-                                    <td class="px-6 py-4 border-b align-top">{{ $recipe->user->name ?? 'Unknown' }}</td>
-                                    <td class="px-6 py-4 border-b align-top">{{ $recipe->province->name ?? 'Unknown' }}</td>
-                                    <td class="px-6 py-4 border-b align-top">{{ $recipe->name }}</td>
-                                    <td class="px-6 py-4 border-b align-top">
-                                        <ul class="list-disc list-inside text-pink-900">
-                                            @foreach($recipe->ingredients as $ingredient)
-                                                <li>{{ $ingredient }}</li>
-                                            @endforeach
-                                        </ul>
-                                    </td>
-                                    <td class="px-6 py-4 border-b align-top">
-                                        <ol class="list-decimal list-inside text-pink-900">
-                                            @foreach($recipe->recipe as $step)
-                                                <li>{{ $step }}</li>
-                                            @endforeach
-                                        </ol>
-                                    </td>
-                                    <td class="px-6 py-4 border-b align-top">
-                                        <a href="{{ route('edit.index', $recipe->id) }}" class="inline-block bg-pink-100 text-pink-700 px-4 py-2 rounded-lg font-semibold hover:bg-pink-200 transition mr-2">Edit</a>
-                                        <form method="POST" action="{{ route('admin.recipe.remove', $recipe->id) }}" style="display:inline;">
-                                            @csrf
-                                            <button type="submit" class="inline-block bg-pink-50 text-red-600 px-4 py-2 rounded-lg font-semibold hover:bg-pink-100 transition">Remove</button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="6" class="px-6 py-4 border-b text-center text-pink-600">No approved recipes found.</td>
-                                </tr>
-                            @endforelse
+    <tr class="hover:bg-pink-200 transition">
+        <td class="px-6 py-4 border-b align-top">{{ $recipe->user->name ?? 'Unknown' }}</td>
+        <td class="px-6 py-4 border-b align-top">{{ $recipe->province->name ?? 'Unknown' }}</td>
+        <td class="px-6 py-4 border-b align-top">{{ $recipe->name }}</td>
+        <td class="px-6 py-4 border-b align-top min-w-[16rem]">{{ $recipe->description }}</td>
+        <td class="px-6 py-4 border-b align-top">
+            <ul class="list-disc list-inside text-pink-900">
+                @foreach($recipe->ingredients as $ingredient)
+                    <li>{{ $ingredient }}</li>
+                @endforeach
+            </ul>
+        </td>
+        <td class="px-6 py-4 border-b align-top">
+            <ol class="list-decimal list-inside text-pink-900">
+                @foreach($recipe->recipe as $step)
+                    <li>{{ $step }}</li>
+                @endforeach
+            </ol>
+        </td>
+        <td class="px-6 py-4 border-b align-top">
+            <div class="flex flex-col items-stretch gap-3">
+                <a href="{{ route('edit.index', $recipe->id) }}"
+                   class="w-full flex items-center justify-center gap-2 bg-pink-600 text-white px-4 py-2 rounded-lg font-semibold shadow hover:bg-pink-700 transition focus:outline-none focus:ring-2 focus:ring-pink-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536M9 13l6.536-6.536a2 2 0 112.828 2.828L11.828 15.828a2 2 0 01-2.828 0L9 13zm0 0V17h4" />
+                    </svg>
+                    Edit
+                </a>
+                <form method="POST" action="{{ route('admin.recipe.remove', $recipe->id) }}" style="display:inline;"
+                      onsubmit="return confirm('Are you sure you want to remove this recipe? This action cannot be undone.');">
+                    @csrf
+                    <button type="submit"
+                            class="w-full flex items-center justify-center gap-2 bg-red-100 text-red-700 px-4 py-2 rounded-lg font-semibold shadow hover:bg-red-200 transition focus:outline-none focus:ring-2 focus:ring-red-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                        Remove
+                    </button>
+                </form>
+            </div>
+        </td>
+    </tr>
+@empty
+    <tr>
+        <td colspan="7" class="px-6 py-4 border-b text-center text-pink-600">No approved recipes found.</td>
+    </tr>
+@endforelse
                         </tbody>
                     </table>
                 </div>

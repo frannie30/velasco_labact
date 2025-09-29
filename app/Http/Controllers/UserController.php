@@ -12,15 +12,18 @@ class UserController extends Controller
 {
     public function dashboard(Request $request)
     {
-        $search = $request->get('search');
-        
-        if ($search) {
-            $provinces = Province::where('name', 'LIKE', '%' . $search . '%')->get();
-        } else {
-            $provinces = Province::all();
-        }
-        
-        return view('dashboard', compact('provinces', 'search'));
+        $search = $request->input('search');
+        $regions = \App\Models\Province::select('region')->distinct()->pluck('region');
+        $provinces = \App\Models\Province::when($search, function ($query, $search) {
+            return $query->where('name', 'like', "%{$search}%");
+        })->paginate(8);
+
+        return view('dashboard', [
+            'provinces' => $provinces,
+            'regions' => $regions,
+            'selectedRegion' => null,
+            'search' => $search,
+        ]);
     }
 
     public function showProvince(Request $request)
@@ -53,13 +56,12 @@ class UserController extends Controller
     public function showRecipe(Request $request)
     {
         $province = $request->input('province');
-        $dish = $request->input('dish');
+        $recipe = $request->input('recipe');
         $provinceModel = Province::where('name', $province)->first();
 
         $recipe = $provinceModel
             ? Recipe::where('province_id', $provinceModel->id)
-                ->where('name', $dish)
-                ->where('is_approved', 1)
+                ->where('name', $recipe)
                 ->first()
             : null;
 
@@ -71,9 +73,14 @@ class UserController extends Controller
     {
         $provinceName = Str::title($request->province);
         $province = Province::where('name', $provinceName)->first();
-        $province_id = $province ? $province->id : null;
 
-         $validated = $request->validate([
+        if (!$province) {
+            return back()
+                ->withInput()
+                ->withErrors(['province' => 'Choose an existing province.']);
+        }
+
+        $validated = $request->validate([
             'province_id' => 'nullable|exists:provinces,id',
             'province' => 'required',
             'name' => 'required|string|max:100',
@@ -82,10 +89,10 @@ class UserController extends Controller
             'ingredients.*' => 'required|string|max:100',
             'recipe'   => 'required|array|min:1|max:100',
             'recipe.*' => 'required|string|max:255',
-         ]);
+        ]);
 
         Recipe::create([
-            'province_id' => $province_id,
+            'province_id' => $province->id,
             'name' => $request->name,
             'description' => $request->description,
             'ingredients' => $request->ingredients,
@@ -94,8 +101,25 @@ class UserController extends Controller
             'created_at' => Carbon::now(),
         ]);
 
-        return redirect()->route('dashboard')->with('success', 'Recipe created successfully.');
+        return redirect()->route('dashboard')->with('success', 'Recipe created successfully. Awaiting admin approval.');
     }
 
-    
+    public function filterProvincesByRegion(Request $request)
+    {
+        $region = $request->input('region');
+        $regions = Province::select('region')->distinct()->pluck('region');
+
+        if ($region && $region !== 'all') {
+            $provinces = Province::where('region', $region)->paginate(8);
+        } else {
+            $provinces = Province::paginate(8);
+        }
+
+        return view('dashboard', [
+            'provinces' => $provinces,
+            'regions' => $regions,
+            'selectedRegion' => $region,
+            'search' => null,
+        ]);
+    }
 }

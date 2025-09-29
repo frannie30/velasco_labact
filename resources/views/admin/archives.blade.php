@@ -18,8 +18,8 @@
 @endif
 
     <div class="py-12 bg-pink-50 min-h-screen">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white/90 shadow-2xl rounded-2xl p-10 border border-pink-200">
+        <div class="max-w-full mx-auto sm:px-12 lg:px-24">
+            <div class="bg-white/90 shadow-2xl rounded-2xl p-16 border border-pink-200">
                 <a href="{{ route('index.index') }}"
                    class="self-start inline-flex items-center justify-center w-10 h-10 text-pink-600 hover:text-pink-800 font-bold rounded-full transition duration-200 mb-4 text-2xl focus:outline-none focus:ring-2 focus:ring-pink-400 focus:ring-offset-2 bg-pink-100 hover:bg-pink-200 shadow"
                    title="Back to Dashboard"
@@ -46,18 +46,17 @@
                         </thead>
 <tbody>
     @forelse($recipes as $recipe)
-        <tr class="hover:bg-pink-50 transition">
+        <tr class="hover:bg-pink-200 transition">
             <td class="px-6 py-4 border-b align-top">{{ $recipe->user->name ?? 'Unknown' }}</td>
             <td class="px-6 py-4 border-b align-top">{{ $recipe->province->name ?? 'Unknown' }}</td>
             <td class="px-6 py-4 border-b align-top">{{ $recipe->name }}</td>
             <td class="px-6 py-4 border-b align-top">{{ $recipe->description }}</td>
-
             <td class="px-6 py-4 border-b align-top">
                 <ul class="list-disc list-inside text-pink-900">
                     @foreach($recipe->ingredients as $ingredient)
-                <li>{{ $ingredient }}</li>
-            @endforeach
-                 </ul>
+                        <li>{{ $ingredient }}</li>
+                    @endforeach
+                </ul>
             </td>
             <td class="px-6 py-4 border-b align-top">
                 <ol class="list-decimal list-inside text-pink-900">
@@ -65,23 +64,39 @@
                         <li>{{ $step }}</li>
                     @endforeach
                 </ol>
-             </td>
+            </td>
             <td class="px-6 py-4 border-b align-top">
-            <form method="POST" action="{{ route('admin.recipes.restore', $recipe->id) }}" style="display:inline;">
-                @csrf
-                <button type="submit" class="inline-block bg-pink-100 text-pink-700 px-4 py-2 rounded-lg font-semibold hover:bg-pink-200 transition mr-2">Restore</button>
-            </form>
-            <form method="POST" action="{{ route('admin.recipes.delete', $recipe->id) }}" style="display:inline;" class="delete-form">
-                @csrf
-                <button type="submit" class="inline-block bg-pink-50 text-red-600 px-4 py-2 rounded-lg font-semibold hover:bg-pink-100 transition">Delete</button>
-            </form>
-        </td>
+                <div class="flex flex-col items-stretch gap-3">
+                    <form method="POST" action="{{ route('admin.recipes.restore', $recipe->id) }}" style="display:inline;" 
+                          onsubmit="return confirm('Are you sure you want to restore this recipe?');">
+                        @csrf
+                        <button type="submit"
+                                class="w-full flex items-center justify-center gap-2 bg-pink-600 text-white px-4 py-2 rounded-lg font-semibold shadow hover:bg-pink-700 transition focus:outline-none focus:ring-2 focus:ring-pink-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17l3-3 3 3M4 4v13a2 2 0 002 2h12a2 2 0 002-2V4" />
+                            </svg>
+                            Restore
+                        </button>
+                    </form>
+                    <form method="POST" action="{{ route('admin.recipes.delete', $recipe->id) }}" style="display:inline;" class="delete-form"
+                          onsubmit="return confirm('Are you sure? This will permanently delete the recipe!');">
+                        @csrf
+                        <button type="submit"
+                                class="w-full flex items-center justify-center gap-2 bg-red-100 text-red-700 px-4 py-2 rounded-lg font-semibold shadow hover:bg-red-200 transition focus:outline-none focus:ring-2 focus:ring-red-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                            Delete
+                        </button>
+                    </form>
+                </div>
+            </td>
         </tr>
-            @empty
-                <tr>
-                    <td colspan="6" class="px-6 py-4 border-b text-center text-pink-600">No recipes found.</td>
-                </tr>
-            @endforelse
+    @empty
+        <tr>
+            <td colspan="6" class="px-6 py-4 border-b text-center text-pink-600">No recipes found.</td>
+        </tr>
+    @endforelse
 </tbody>
                     </table>
                 </div>
@@ -90,31 +105,3 @@
         </div>
     </div>
 </x-app-layout>
-
-<!-- Add SweetAlert2 CDN -->
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const deleteForms = document.querySelectorAll('.delete-form');
-
-    deleteForms.forEach(form => {
-        form.addEventListener('submit', function (e) {
-            e.preventDefault(); // stop normal submit
-
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "This will permanently delete the recipe!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Yes, delete it!',
-                cancelButtonText: 'Cancel'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    form.submit(); // proceed with form
-                }
-            });
-        });
-    });
-});
-</script>

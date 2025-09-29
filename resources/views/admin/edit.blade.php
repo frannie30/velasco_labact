@@ -8,8 +8,16 @@
     <div class="py-12 bg-pink-50 min-h-screen">
         <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white/80 backdrop-blur-md shadow-2xl sm:rounded-2xl p-10 border border-pink-200">
+                <a href="{{ route('index.index') }}"
+                   class="self-start inline-flex items-center justify-center w-10 h-10 text-pink-600 hover:text-pink-800 font-bold rounded-full transition duration-200 mb-4 text-2xl focus:outline-none focus:ring-2 focus:ring-pink-400 focus:ring-offset-2 bg-pink-100 hover:bg-pink-200 shadow"
+                   title="Back to Dashboard"
+                   onclick="return confirm('Are you sure you want to cancel editing? Any unsaved changes will be lost.');"
+                   aria-label="Back to Dashboard">
+                    &larr;
+                </a>  
                 <h2 class="text-3xl font-extrabold mb-8 text-center text-pink-700">Edit Recipe</h2>
-<form method="POST" action="{{ route('recipes.update', $recipe->id) }}">
+<form method="POST" action="{{ route('recipes.update', $recipe->id) }}"
+      onsubmit="return confirm('Are you sure you want to update this recipe?');">
     @csrf
     @method('PUT')
 
@@ -91,7 +99,8 @@
         <button type="submit" class="bg-pink-600 text-white px-8 py-3 rounded-xl font-bold shadow-lg hover:bg-pink-700 hover:scale-105 transition focus:outline-none focus:ring-2 focus:ring-pink-400">
             Update Recipe
         </button>
-        <a href="{{ route('index.index') }}" class="bg-gray-300 text-pink-800 px-8 py-3 rounded-xl font-bold shadow-lg hover:bg-gray-400 hover:scale-105 transition focus:outline-none focus:ring-2 focus:ring-pink-400 text-center">
+        <a href="{{ route('index.index') }}" class="bg-gray-300 text-pink-800 px-8 py-3 rounded-xl font-bold shadow-lg hover:bg-gray-400 hover:scale-105 transition focus:outline-none focus:ring-2 focus:ring-pink-400 text-center"
+           onclick="return confirm('Are you sure you want to cancel editing? Any unsaved changes will be lost.');">
             Cancel
         </a>
     </div>

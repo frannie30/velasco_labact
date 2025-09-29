@@ -22,6 +22,8 @@ class Recipe extends Model
      protected $casts = [
         'ingredients' => 'array',
         'recipe'      => 'array',
+            'is_approved' => 'boolean',
+
     ];
     
     public function user()

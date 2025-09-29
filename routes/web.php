@@ -36,6 +36,7 @@ Route::get('/dashboard', [UserController::class, 'dashboard'])->name('dashboard'
         ->name('province');
 
     Route::match(['get', 'post'], '/users/store', [UserController::class, 'store'])->name('users.store');
+    Route::get('/region-filter', [UserController::class, 'filterProvincesByRegion'])->name('region.filter');
 
         Route::middleware(CheckRole::class)->group(function () {
             Route::get('/create', [AdminController::class, 'create'])->name('create.index');
